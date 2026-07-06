@@ -333,14 +333,14 @@ class JellyMonster {
     this.size = size;
     this.mesh = new THREE.Group();
     
-    // ボディ
+    // ボディ (ラムネソーダブルー)
     const geo = new THREE.CylinderGeometry(size * 0.8, size, size, 16);
     const mat = new THREE.MeshStandardMaterial({
-      color: 0x00f5d4, // ミントエメラルド
+      color: 0x00bbf9,
       roughness: 0.15,
       metalness: 0.1,
       transparent: true,
-      opacity: 0.8
+      opacity: 0.85
     });
     this.body = new THREE.Mesh(geo, mat);
     this.body.position.y = size / 2;
@@ -402,16 +402,16 @@ class JellyMonster {
 function buildPlayer() {
   state.player = new THREE.Group();
   
-  // 1. 胴体
+  // 1. 胴体 (さくらピンク)
   const bodyGeo = new THREE.BoxGeometry(1.6, 1.8, 1.2);
-  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x70e000, roughness: 0.3 }); // ライムグリーン
+  const bodyMat = new THREE.MeshStandardMaterial({ color: 0xff85a2, roughness: 0.3 });
   const body = new THREE.Mesh(bodyGeo, bodyMat);
   body.position.y = 1.8;
   body.castShadow = true;
   body.receiveShadow = true;
   state.player.add(body);
   
-  // 2. 頭
+  // 2. 頭 (白)
   const headGeo = new THREE.SphereGeometry(0.7, 16, 16);
   const headMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 });
   const head = new THREE.Mesh(headGeo, headMat);
@@ -419,16 +419,16 @@ function buildPlayer() {
   head.castShadow = true;
   state.player.add(head);
   
-  // 3. 目
+  // 3. 目 (あんずオレンジ)
   const goggleGeo = new THREE.BoxGeometry(1.0, 0.3, 0.2);
-  const goggleMat = new THREE.MeshBasicMaterial({ color: 0x00f5d4 });
+  const goggleMat = new THREE.MeshBasicMaterial({ color: 0xffb703 });
   const goggles = new THREE.Mesh(goggleGeo, goggleMat);
   goggles.position.set(0, 3.0, 0.6);
   state.player.add(goggles);
   
-  // 4. 左足
+  // 4. 左足 (抹茶グリーン)
   const legGeo = new THREE.CylinderGeometry(0.2, 0.2, 1.0, 8);
-  const limbMat = new THREE.MeshStandardMaterial({ color: 0x161c2d });
+  const limbMat = new THREE.MeshStandardMaterial({ color: 0x70e000, roughness: 0.4 });
   const legL = new THREE.Mesh(legGeo, limbMat);
   legL.position.set(-0.45, 0.5, 0);
   legL.castShadow = true;
@@ -461,16 +461,16 @@ function buildPlayer() {
 function buildArena() {
   const arenaGroup = new THREE.Group();
   
-  // 床 (エメラルドミント)
+  // 床 (白木・和紙のアイボリー)
   const floorGeo = new THREE.BoxGeometry(state.arenaWidth, 1.0, state.arenaDepth);
-  const floorMat = new THREE.MeshStandardMaterial({ color: 0xd8f3dc, roughness: 0.6 });
+  const floorMat = new THREE.MeshStandardMaterial({ color: 0xfffcf5, roughness: 0.7 });
   const floor = new THREE.Mesh(floorGeo, floorMat);
   floor.position.y = -0.5;
   floor.receiveShadow = true;
   arenaGroup.add(floor);
   
-  // 壁 (フォレストグリーン)
-  const wallMat = new THREE.MeshStandardMaterial({ color: 0x1b4332, roughness: 0.5 });
+  // 壁 (さくらピンク)
+  const wallMat = new THREE.MeshStandardMaterial({ color: 0xffccd5, roughness: 0.5 });
   const w = state.arenaWidth;
   const d = state.arenaDepth;
   const h = state.arenaHeight;
@@ -492,8 +492,8 @@ function buildArena() {
   wallR.position.set(w / 2 + 1.0, h / 2, 0);
   arenaGroup.add(wallR);
   
-  // グリッド線
-  const gridHelper = new THREE.GridHelper(w, 20, 0x40916c, 0x40916c);
+  // グリッド線 (さくら色の繊細な格子)
+  const gridHelper = new THREE.GridHelper(w, 20, 0xffb5a7, 0xffb5a7);
   gridHelper.position.y = 0.05;
   arenaGroup.add(gridHelper);
   
@@ -505,10 +505,10 @@ function init3D() {
   const container = document.getElementById('canvas-container');
   container.innerHTML = '';
   
-  // Scene
+  // Scene (サクラホワイトの春霞)
   state.scene = new THREE.Scene();
-  state.scene.background = new THREE.Color(0x0b0f19); // 漆黒のエメラルドスカイ
-  state.scene.fog = new THREE.FogExp2(0x0b0f19, 0.01);
+  state.scene.background = new THREE.Color(0xfff0f5);
+  state.scene.fog = new THREE.FogExp2(0xfff0f5, 0.008);
   
   // Camera (固定俯瞰の三人称視点)
   state.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.5, 500);
@@ -520,11 +520,11 @@ function init3D() {
   state.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   container.appendChild(state.renderer.domElement);
   
-  // Lights
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.55);
+  // Lights (日本的な明るさ: 全体を強く柔らかく照らす)
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
   state.scene.add(ambientLight);
   
-  const sunLight = new THREE.DirectionalLight(0x00f5d4, 0.85);
+  const sunLight = new THREE.DirectionalLight(0xfffcf2, 1.05); // 温かみのある日差し
   sunLight.position.set(30, 50, 20);
   sunLight.castShadow = true;
   sunLight.shadow.mapSize.width = 1024;
@@ -535,11 +535,11 @@ function init3D() {
   buildArena();
   buildPlayer();
   
-  // 初期ボール3個
+  // 初期ボール3個 (いちご、あんず、ラムネ)
   state.balls = [
-    new BouncyBall(-15, 12, -15, 2.2, 0xff005f), // ネオンピンク
-    new BouncyBall(15, 15, -15, 2.0, 0x00f5d4),  // ネオンミント
-    new BouncyBall(0, 18, 15, 2.5, 0xffe53b)     // ネオンイエロー
+    new BouncyBall(-15, 12, -15, 2.2, 0xff4d6d), // いちごピンク
+    new BouncyBall(15, 15, -15, 2.0, 0xffb703),  // あんずオレンジ
+    new BouncyBall(0, 18, 15, 2.5, 0x00bbf9)     // ラムネソーダブルー
   ];
   
   state.monsters = [];
@@ -581,7 +581,7 @@ function spawnMonster() {
   
   // 出現時エフェクト
   for (let i = 0; i < 5; i++) {
-    const sp = new GameParticle(rx, 0.5, rz, 0x00f5d4, 0.25);
+    const sp = new GameParticle(rx, 0.5, rz, 0x00bbf9, 0.25);
     state.scene.add(sp);
     state.particles.push(sp);
   }
@@ -712,11 +712,11 @@ function checkCollisions() {
       ball.throwCooldown = 18; // 0.3秒間は再キャッチをブロック
       
       playSound('throw', 1.0 + Math.random() * 0.25);
-      showFloatMessage("オートスロー！ ⚡☄️", '#00f5d4');
+      showFloatMessage("オートスロー！ ⚡☄️", '#ff4d6d');
       
-      // 射出火花 (エメラルドグリーン)
+      // 射出火花 (さくらピンク)
       for (let i = 0; i < 6; i++) {
-        const sp = new GameParticle(ball.x, ball.y, ball.z, 0x00f5d4, 0.22);
+        const sp = new GameParticle(ball.x, ball.y, ball.z, 0xff4d6d, 0.22);
         state.scene.add(sp);
         state.particles.push(sp);
       }
@@ -738,23 +738,25 @@ function checkCollisions() {
         // 投げられたボールなら高スコア
         const addScore = ball.isThrown ? 120 : 40;
         state.score += addScore;
-        showFloatMessage(`モンスター撃破！ +${addScore} pts`, '#70e000');
+        showFloatMessage(`モンスター撃破！ +${addScore} pts`, '#ff758f');
         
-        // 撃破時の紙吹雪
+        // 撃破時の紙吹雪 (さくらピンク/ラムネブルー)
+        const pColors = [0xff758f, 0xffcad4, 0x00bbf9];
         for (let i = 0; i < 15; i++) {
-          const sp = new GameParticle(mp.x, mp.y + monster.size/2, mp.z, 0x70e000, 0.24);
+          const c = pColors[Math.floor(Math.random() * pColors.length)];
+          const sp = new GameParticle(mp.x, mp.y + monster.size/2, mp.z, c, 0.24);
           state.scene.add(sp);
           state.particles.push(sp);
         }
         
         // ★ モンスターを撃破した際、たまに新しいボールがアリーナにポップする！ (ボール上限 6個)
         if (Math.random() < 0.35 && state.balls.length < 6) {
-          const newColors = [0xff005f, 0x00f5d4, 0xffe53b, 0xff7096, 0x00bbf9];
+          const newColors = [0xff4d6d, 0xffb703, 0x00bbf9, 0xff758f, 0xffcad4];
           const c = newColors[Math.floor(Math.random() * newColors.length)];
           const newBall = new BouncyBall(mp.x, 15, mp.z, 1.8 + Math.random() * 0.6, c);
           state.balls.push(newBall);
           playSound('spawn');
-          showFloatMessage("ボールが追加された！ 🥎✨", '#ffe53b');
+          showFloatMessage("ボールが追加された！ 🥎✨", '#ffb703');
         }
         
         // ボールの反射
