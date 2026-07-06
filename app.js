@@ -398,7 +398,7 @@ class JellyMonster {
   }
 }
 
-// --- Player (手足がびよんびよん動く人) ---
+// --- Player (手足に関節(ひざ・ひじ)がある人間ロボット) ---
 function buildPlayer() {
   state.player = new THREE.Group();
   
@@ -434,33 +434,118 @@ function buildPlayer() {
   goggles.position.set(0, 3.0, 0.6);
   state.player.add(goggles);
   
-  // 4. 左足 (藍色)
-  const legGeo = new THREE.CylinderGeometry(0.2, 0.2, 1.0, 8);
-  const limbMat = new THREE.MeshStandardMaterial({ color: 0x1d3557, roughness: 0.4 });
-  const legL = new THREE.Mesh(legGeo, limbMat);
-  legL.position.set(-0.45, 0.5, 0);
-  legL.castShadow = true;
-  state.player.add(legL);
+  // マテリアル & ジオメトリ定義
+  const limbMat = new THREE.MeshStandardMaterial({ color: 0x1d3557, roughness: 0.4 }); // 藍色
+  const jointMat = new THREE.MeshStandardMaterial({ color: 0xffb703, roughness: 0.3 }); // 関節はゴールド山吹色でメカっぽく！
   
-  // 5. 右足
-  const legR = new THREE.Mesh(legGeo, limbMat);
-  legR.position.set(0.45, 0.5, 0);
-  legR.castShadow = true;
-  state.player.add(legR);
+  const upperLegGeo = new THREE.CylinderGeometry(0.18, 0.16, 0.6, 8);
+  const lowerLegGeo = new THREE.CylinderGeometry(0.14, 0.14, 0.6, 8);
+  const jointGeo = new THREE.SphereGeometry(0.18, 8, 8);
   
-  // 6. 左手
-  const armGeo = new THREE.CylinderGeometry(0.18, 0.18, 1.2, 8);
-  armGeo.rotateZ(Math.PI / 12);
-  const armL = new THREE.Mesh(armGeo, limbMat);
-  armL.position.set(-1.0, 1.8, 0);
-  armL.castShadow = true;
-  state.player.add(armL);
+  const upperArmGeo = new THREE.CylinderGeometry(0.15, 0.14, 0.6, 8);
+  const lowerArmGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.6, 8);
   
-  // 7. 右手
-  const armR = new THREE.Mesh(armGeo, limbMat);
-  armR.position.set(1.0, 1.8, 0);
-  armR.castShadow = true;
-  state.player.add(armR);
+  // 4. 左脚グループ (左付け根位置: y=1.0)
+  const leftLeg = new THREE.Group();
+  leftLeg.position.set(-0.45, 1.0, 0);
+  
+  const leftThigh = new THREE.Mesh(upperLegGeo, limbMat);
+  leftThigh.position.y = -0.3;
+  leftThigh.castShadow = true;
+  leftLeg.add(leftThigh);
+  
+  const leftKnee = new THREE.Mesh(jointGeo, jointMat);
+  leftKnee.position.y = -0.6;
+  leftLeg.add(leftKnee);
+  
+  const leftShinGroup = new THREE.Group();
+  leftShinGroup.position.set(0, -0.6, 0);
+  const leftShin = new THREE.Mesh(lowerLegGeo, limbMat);
+  leftShin.position.y = -0.3;
+  leftShin.castShadow = true;
+  leftShinGroup.add(leftShin);
+  
+  // 足先
+  const footGeo = new THREE.BoxGeometry(0.24, 0.12, 0.4);
+  const leftFoot = new THREE.Mesh(footGeo, limbMat);
+  leftFoot.position.set(0, -0.6, 0.1);
+  leftShinGroup.add(leftFoot);
+  
+  leftLeg.add(leftShinGroup);
+  state.player.add(leftLeg);
+  
+  // 5. 右脚グループ (右付け根位置: y=1.0)
+  const rightLeg = new THREE.Group();
+  rightLeg.position.set(0.45, 1.0, 0);
+  
+  const rightThigh = new THREE.Mesh(upperLegGeo, limbMat);
+  rightThigh.position.y = -0.3;
+  rightThigh.castShadow = true;
+  rightLeg.add(rightThigh);
+  
+  const rightKnee = new THREE.Mesh(jointGeo, jointMat);
+  rightKnee.position.y = -0.6;
+  rightLeg.add(rightKnee);
+  
+  const rightShinGroup = new THREE.Group();
+  rightShinGroup.position.set(0, -0.6, 0);
+  const rightShin = new THREE.Mesh(lowerLegGeo, limbMat);
+  rightShin.position.y = -0.3;
+  rightShin.castShadow = true;
+  rightShinGroup.add(rightShin);
+  
+  const rightFoot = new THREE.Mesh(footGeo, limbMat);
+  rightFoot.position.set(0, -0.6, 0.1);
+  rightShinGroup.add(rightFoot);
+  
+  rightLeg.add(rightShinGroup);
+  state.player.add(rightLeg);
+  
+  // 6. 左腕グループ (肩位置: y=1.8)
+  const leftArm = new THREE.Group();
+  leftArm.position.set(-1.0, 1.8, 0);
+  
+  const leftUpperArm = new THREE.Mesh(upperArmGeo, limbMat);
+  leftUpperArm.position.y = -0.3;
+  leftUpperArm.castShadow = true;
+  leftArm.add(leftUpperArm);
+  
+  const leftElbow = new THREE.Mesh(jointGeo, jointMat);
+  leftElbow.position.y = -0.6;
+  leftArm.add(leftElbow);
+  
+  const leftForeArmGroup = new THREE.Group();
+  leftForeArmGroup.position.set(0, -0.6, 0);
+  const leftForeArm = new THREE.Mesh(lowerArmGeo, limbMat);
+  leftForeArm.position.y = -0.3;
+  leftForeArm.castShadow = true;
+  leftForeArmGroup.add(leftForeArm);
+  
+  leftArm.add(leftForeArmGroup);
+  state.player.add(leftArm);
+  
+  // 7. 右腕グループ (肩位置: y=1.8)
+  const rightArm = new THREE.Group();
+  rightArm.position.set(1.0, 1.8, 0);
+  
+  const rightUpperArm = new THREE.Mesh(upperArmGeo, limbMat);
+  rightUpperArm.position.y = -0.3;
+  rightUpperArm.castShadow = true;
+  rightArm.add(rightUpperArm);
+  
+  const rightElbow = new THREE.Mesh(jointGeo, jointMat);
+  rightElbow.position.y = -0.6;
+  rightArm.add(rightElbow);
+  
+  const rightForeArmGroup = new THREE.Group();
+  rightForeArmGroup.position.set(0, -0.6, 0);
+  const rightForeArm = new THREE.Mesh(lowerArmGeo, limbMat);
+  rightForeArm.position.y = -0.3;
+  rightForeArm.castShadow = true;
+  rightForeArmGroup.add(rightForeArm);
+  
+  rightArm.add(rightForeArmGroup);
+  state.player.add(rightArm);
   
   state.scene.add(state.player);
 }
@@ -644,18 +729,41 @@ function updatePlayer() {
   k.position.set(p.x, 1.0, p.z);
   k.rotation.y = p.angle;
   
-  // 手足のびよんびよんアニメーション (歩行時)
+  // 手足のびよんびよんアニメーション (歩行時: 関節をひじ・ひざで曲げる)
+  const legL = k.children[4];
+  const legR = k.children[5];
+  const armL = k.children[6];
+  const rightArm = k.children[7];
+  
   if (isMoving) {
-    const cycle = performance.now() * 0.015;
-    k.children[3].rotation.x = Math.sin(cycle) * 0.6; // 左足
-    k.children[4].rotation.x = -Math.sin(cycle) * 0.6; // 右足
-    k.children[5].rotation.x = -Math.sin(cycle) * 0.6; // 左手
-    k.children[6].rotation.x = Math.sin(cycle) * 0.6; // 右手
+    const cycle = performance.now() * 0.016; // 小走りテンポ
+    
+    // 1. 太もも・二の腕のスイング
+    legL.rotation.x = Math.sin(cycle) * 0.6;
+    legR.rotation.x = -Math.sin(cycle) * 0.6;
+    
+    armL.rotation.x = -Math.sin(cycle) * 0.55;
+    rightArm.rotation.x = Math.sin(cycle) * 0.55;
+    
+    // 2. ひざ・ひじの屈曲 (グループのインデックス2にある shinGroup / foreArmGroup を曲げる)
+    // 脚が後ろにスイングした時にひざが後ろに折れる (膝関節の可動域制限を表現)
+    legL.children[2].rotation.x = Math.max(0, -Math.sin(cycle) * 0.7);
+    legR.children[2].rotation.x = Math.max(0, Math.sin(cycle) * 0.7);
+    
+    // 腕が前に振られるときにひじが軽く曲がる
+    armL.children[2].rotation.x = -Math.max(0.1, -Math.sin(cycle) * 0.5);
+    rightArm.children[2].rotation.x = -Math.max(0.1, Math.sin(cycle) * 0.5);
   } else {
-    k.children[3].rotation.x = 0;
-    k.children[4].rotation.x = 0;
-    k.children[5].rotation.x = 0;
-    k.children[6].rotation.x = 0;
+    // 待機状態 (関節を伸ばす)
+    legL.rotation.x = 0;
+    legR.rotation.x = 0;
+    armL.rotation.x = 0;
+    rightArm.rotation.x = 0;
+    
+    legL.children[2].rotation.x = 0;
+    legR.children[2].rotation.x = 0;
+    armL.children[2].rotation.x = 0;
+    rightArm.children[2].rotation.x = 0;
   }
 }
 
