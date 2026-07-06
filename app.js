@@ -1,4 +1,4 @@
-// --- game5: Bouncy Ball Catch & Auto-Throw 3D (Sakura Pastel Theme) ---
+// --- game5: Bouncy Ball Catch & Auto-Throw 3D (Shinto Shrine Vivid Theme) ---
 
 const state = {
   gameState: 'lobby', // 'lobby' | 'playing' | 'gameover'
@@ -17,7 +17,7 @@ const state = {
   monsters: [],
   particles: [],
   
-  // Arena Settings (Sakura & Mint Theme)
+  // Arena Settings (Shinto Vermilion & Ivory Theme)
   arenaWidth: 60,
   arenaDepth: 60,
   arenaHeight: 30,
@@ -162,7 +162,7 @@ class GameParticle extends THREE.Mesh {
     const mat = new THREE.MeshBasicMaterial({
       color: color,
       transparent: true,
-      opacity: 0.9
+      opacity: 0.95 // よりくっきりした不透明度
     });
     super(geo, mat);
     this.position.set(x, y, z);
@@ -180,7 +180,7 @@ class GameParticle extends THREE.Mesh {
     this.vy += state.gravity * 0.4; // 軽めの落下
     
     this.scale.multiplyScalar(this.decay);
-    this.material.opacity -= 0.018;
+    this.material.opacity -= 0.022; // 少し早めに消して軽快に
     
     return this.material.opacity > 0 && this.scale.x > 0.02;
   }
@@ -188,7 +188,7 @@ class GameParticle extends THREE.Mesh {
 
 // --- Bouncy Ball (大きくてふんわり弾む大量のボール) ---
 class BouncyBall {
-  constructor(x, y, z, radius = 4.0, colorHex = 0xff4d6d) {
+  constructor(x, y, z, radius = 4.0, colorHex = 0xd9381e) {
     this.radius = radius;
     this.color = colorHex;
     this.isThrown = false;
@@ -196,12 +196,12 @@ class BouncyBall {
     
     this.mesh = new THREE.Group();
     
-    // 巨大な球体 (光沢クリアコート)
+    // 巨大な球体 (漆器や金箔のようなビビッドで光沢のある質感)
     const geo = new THREE.SphereGeometry(radius, 32, 32);
     const mat = new THREE.MeshPhysicalMaterial({
       color: this.color,
-      roughness: 0.12,
-      metalness: 0.1,
+      roughness: 0.08,
+      metalness: 0.15,
       clearcoat: 1.0,
       clearcoatRoughness: 0.05
     });
@@ -210,8 +210,8 @@ class BouncyBall {
     this.sphere.receiveShadow = true;
     this.mesh.add(this.sphere);
     
-    // 白いリングバンド模様
-    const ringGeo = new THREE.TorusGeometry(radius * 1.01, radius * 0.07, 8, 32);
+    // 手まりの帯のような白いリング模様 (くっきり太め)
+    const ringGeo = new THREE.TorusGeometry(radius * 1.01, radius * 0.08, 8, 32);
     const ringMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 });
     const ring = new THREE.Mesh(ringGeo, ringMat);
     ring.rotation.x = Math.PI / 2;
@@ -333,26 +333,38 @@ class BouncyBall {
   }
 }
 
-// --- Jelly Monster (ラムネソーダモンスター) ---
+// --- Jelly Monster (提灯型モンスター) ---
 class JellyMonster {
   constructor(x, z, size = 1.8) {
     this.size = size;
     this.mesh = new THREE.Group();
     
-    // ラムネソーダボディ (半透明ブルー)
+    // 提灯ボディ (はっきりした山吹ゴールド)
     const geo = new THREE.CylinderGeometry(size * 0.8, size, size, 16);
     const mat = new THREE.MeshStandardMaterial({
-      color: 0x00bbf9,
+      color: 0xffb703,
       roughness: 0.15,
       metalness: 0.1,
       transparent: true,
-      opacity: 0.85
+      opacity: 0.88
     });
     this.body = new THREE.Mesh(geo, mat);
     this.body.position.y = size / 2;
     this.body.castShadow = true;
     this.body.receiveShadow = true;
     this.mesh.add(this.body);
+    
+    // 提灯の上下の黒いふち
+    const rimGeo = new THREE.CylinderGeometry(size * 0.85, size * 0.85, size * 0.12, 16);
+    const rimMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.5 });
+    
+    const rimTop = new THREE.Mesh(rimGeo, rimMat);
+    rimTop.position.y = size;
+    this.mesh.add(rimTop);
+    
+    const rimBottom = new THREE.Mesh(rimGeo, rimMat);
+    rimBottom.position.y = 0;
+    this.mesh.add(rimBottom);
     
     // 大きな目
     const eyeGeo = new THREE.SphereGeometry(0.35, 12, 12);
@@ -404,16 +416,16 @@ class JellyMonster {
   }
 }
 
-// --- Player (多関節三色団子ロボット人間 - 11箇所可動関節) ---
+// --- Player (多関節お祭りロボット人間 - 11箇所可動関節) ---
 function buildPlayer() {
   state.player = new THREE.Group();
   
-  // 基幹マテリアル (さくらピンク・抹茶グリーン・白の三色団子)
-  const bodyMat = new THREE.MeshStandardMaterial({ color: 0xff85a2, roughness: 0.3 }); // さくらピンク胴体
-  const innerMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 }); // 白
-  const limbMat = new THREE.MeshStandardMaterial({ color: 0x70e000, roughness: 0.4 }); // 抹茶グリーン手足
-  const jointMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 }); // 白ジョイント
-  const eyeMat = new THREE.MeshBasicMaterial({ color: 0xffb703 }); // あんずオレンジ目
+  // 基幹マテリアル (朱赤・深い藍色・純白・山吹金の高コントラスト配色)
+  const bodyMat = new THREE.MeshStandardMaterial({ color: 0xd9381e, roughness: 0.35 }); // 法被の朱赤
+  const innerMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 }); // 純白
+  const limbMat = new THREE.MeshStandardMaterial({ color: 0x1d3557, roughness: 0.4 }); // 藍色
+  const jointMat = new THREE.MeshStandardMaterial({ color: 0xffb703, roughness: 0.3 }); // 金色関節
+  const eyeMat = new THREE.MeshBasicMaterial({ color: 0x1a1a1a }); // 墨黒
   
   // 1. 腰 (Pelvis) - キャラクターの起点
   const pelvisGeo = new THREE.BoxGeometry(1.6, 0.5, 1.1);
@@ -422,7 +434,7 @@ function buildPlayer() {
   pelvis.castShadow = true;
   state.player.add(pelvis);
   
-  // 2. 胸部 (Chest / Upper Body)
+  // 2. 胸部 (Chest / Upper Body) - 腰の上の背骨関節を介して接続
   const chestGroup = new THREE.Group();
   chestGroup.position.set(0, 1.15, 0); // 背骨関節の位置
   
@@ -432,13 +444,13 @@ function buildPlayer() {
   
   const chestGeo = new THREE.BoxGeometry(1.6, 1.2, 1.2);
   const chest = new THREE.Mesh(chestGeo, bodyMat);
-  chest.position.y = 0.6;
+  chest.position.y = 0.6; // 関節の少し上にメッシュの中心
   chest.castShadow = true;
   chestGroup.add(chest);
   
-  // 3. 首関節 ＆ 頭 (ヘアバンドやハチマキなしのシンプルな団子頭)
+  // 3. 首関節 ＆ 頭
   const neckGroup = new THREE.Group();
-  neckGroup.position.set(0, 1.2, 0);
+  neckGroup.position.set(0, 1.2, 0); // 胸の上端
   
   // 首関節球体
   const neckJoint = new THREE.Mesh(new THREE.SphereGeometry(0.18, 8, 8), jointMat);
@@ -450,6 +462,14 @@ function buildPlayer() {
   head.castShadow = true;
   neckGroup.add(head);
   
+  // ハチマキ (藍染)
+  const bandGeo = new THREE.TorusGeometry(0.67, 0.08, 6, 24);
+  const bandMat = new THREE.MeshBasicMaterial({ color: 0x1d3557 });
+  const band = new THREE.Mesh(bandGeo, bandMat);
+  band.position.set(0, 0.6, 0);
+  band.rotation.x = Math.PI / 8;
+  neckGroup.add(band);
+  
   // 目 (ゴーグル)
   const goggles = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.26, 0.2), eyeMat);
   goggles.position.set(0, 0.5, 0.55);
@@ -459,7 +479,7 @@ function buildPlayer() {
   
   // 4. 左腕 (肩関節を胸の左に接続)
   const leftArm = new THREE.Group();
-  leftArm.position.set(-0.95, 1.0, 0);
+  leftArm.position.set(-0.95, 1.0, 0); // 胸の上側左
   const lShoulder = new THREE.Mesh(new THREE.SphereGeometry(0.18, 8, 8), jointMat);
   leftArm.add(lShoulder);
   
@@ -517,7 +537,7 @@ function buildPlayer() {
   
   // 6. 左脚 (股関節を腰の下に接続)
   const leftLeg = new THREE.Group();
-  leftLeg.position.set(-0.45, 0.9, 0);
+  leftLeg.position.set(-0.45, 0.9, 0); // 腰の下
   const lHip = new THREE.Mesh(legJointGeo, jointMat);
   leftLeg.add(lHip);
   
@@ -589,16 +609,16 @@ function buildPlayer() {
 function buildArena() {
   const arenaGroup = new THREE.Group();
   
-  // 床 (パステルミントエメラルド)
+  // 床 (くっきりした純白)
   const floorGeo = new THREE.BoxGeometry(state.arenaWidth, 1.0, state.arenaDepth);
-  const floorMat = new THREE.MeshStandardMaterial({ color: 0xd8f3dc, roughness: 0.6 });
+  const floorMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.7 });
   const floor = new THREE.Mesh(floorGeo, floorMat);
   floor.position.y = -0.5;
   floor.receiveShadow = true;
   arenaGroup.add(floor);
   
-  // 壁 (さくらピンク)
-  const wallMat = new THREE.MeshStandardMaterial({ color: 0xffccd5, roughness: 0.5 });
+  // 壁 (鮮烈な鳥居の朱赤)
+  const wallMat = new THREE.MeshStandardMaterial({ color: 0xd9381e, roughness: 0.55 });
   const w = state.arenaWidth;
   const d = state.arenaDepth;
   const h = state.arenaHeight;
@@ -620,8 +640,8 @@ function buildArena() {
   wallR.position.set(w / 2 + 1.0, h / 2, 0);
   arenaGroup.add(wallR);
   
-  // グリッド線 (サクラ色の格子模様)
-  const gridHelper = new THREE.GridHelper(w, 20, 0xffb5a7, 0xffb5a7);
+  // グリッド線 (引き締まった漆黒・墨色の格子)
+  const gridHelper = new THREE.GridHelper(w, 20, 0x000000, 0x000000);
   gridHelper.position.y = 0.05;
   arenaGroup.add(gridHelper);
   
@@ -633,10 +653,11 @@ function init3D() {
   const container = document.getElementById('canvas-container');
   container.innerHTML = '';
   
-  // Scene (サクラホワイトの春霞)
+  // Scene (はっきりとした日本晴れの青空)
   state.scene = new THREE.Scene();
-  state.scene.background = new THREE.Color(0xfff0f5);
-  state.scene.fog = new THREE.FogExp2(0xfff0f5, 0.008);
+  state.scene.background = new THREE.Color(0x00bbf9); // ビビッドなコバルトブルー
+  // ★ パステル感をなくすため、もや(フォグ)を完全無効化してくっきり化！
+  state.scene.fog = null;
   
   // Camera (固定俯瞰の三人称視点)
   state.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.5, 500);
@@ -648,11 +669,11 @@ function init3D() {
   state.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   container.appendChild(state.renderer.domElement);
   
-  // Lights (日本的な明るさ: 全体を強く柔らかく照らす)
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+  // Lights (からっと晴れた強い影を出す陽光)
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
   state.scene.add(ambientLight);
   
-  const sunLight = new THREE.DirectionalLight(0xfffcf2, 1.05); // 温かみのある日差し
+  const sunLight = new THREE.DirectionalLight(0xfffcf2, 1.2); // より強い日差し
   sunLight.position.set(30, 50, 20);
   sunLight.castShadow = true;
   sunLight.shadow.mapSize.width = 1024;
@@ -663,15 +684,15 @@ function init3D() {
   buildArena();
   buildPlayer();
   
-  // ★ ボールは大きくて大量！初期ボール7個！ (いちごピンク、レモンイエロー、ラムネブルー)
+  // ★ ボールは大きくて大量！(漆器朱赤、山吹金、お祭り紺)
   state.balls = [
-    new BouncyBall(-16, 15, -16, 4.4, 0xff4d6d),
-    new BouncyBall(16, 18, -16, 3.8, 0xffe53b),
-    new BouncyBall(0, 20, 16, 4.6, 0x00bbf9),
-    new BouncyBall(-18, 12, 18, 3.5, 0xff4d6d),
-    new BouncyBall(18, 16, 18, 4.2, 0xffe53b),
-    new BouncyBall(-5, 22, -10, 3.9, 0x00bbf9),
-    new BouncyBall(10, 14, 0, 4.5, 0xff4d6d)
+    new BouncyBall(-16, 15, -16, 4.4, 0xd9381e), // 漆の朱赤
+    new BouncyBall(16, 18, -16, 3.8, 0xffb703), // 山吹ゴールド
+    new BouncyBall(0, 20, 16, 4.6, 0x1d3557),  // お祭りネイビー
+    new BouncyBall(-18, 12, 18, 3.5, 0xd9381e),
+    new BouncyBall(18, 16, 18, 4.2, 0xffb703),
+    new BouncyBall(-5, 22, -10, 3.9, 0x1d3557),
+    new BouncyBall(10, 14, 0, 4.5, 0xd9381e)
   ];
   
   state.monsters = [];
@@ -711,9 +732,9 @@ function spawnMonster() {
   const monster = new JellyMonster(rx, rz, 1.8 + Math.random() * 0.5);
   state.monsters.push(monster);
   
-  // 出現時エフェクト (ラムネブルー)
+  // 出現時エフェクト (山吹ゴールド)
   for (let i = 0; i < 5; i++) {
-    const sp = new GameParticle(rx, 0.5, rz, 0x00bbf9, 0.25);
+    const sp = new GameParticle(rx, 0.5, rz, 0xffb703, 0.25);
     state.scene.add(sp);
     state.particles.push(sp);
   }
@@ -768,18 +789,7 @@ function updatePlayer() {
   k.position.set(p.x, 1.0, p.z);
   k.rotation.y = p.angle;
   
-  // ★ 多関節キャラクターパーツの取得とアニメーション
-  // k.children[1] : chestGroup (胸部・上半身)
-  //   chestGroup.children[2] : neckGroup (首・頭)
-  //   chestGroup.children[3] : leftArm
-  //     leftArm.children[3] : leftForeArmGroup (ひじ下)
-  //   chestGroup.children[4] : rightArm
-  //     rightArm.children[3] : rightForeArmGroup (ひじ下)
-  // k.children[2] : leftLeg (左脚全体)
-  //   leftLeg.children[3] : leftShinGroup (ひざ下)
-  // k.children[3] : rightLeg (右脚全体)
-  //   rightLeg.children[3] : rightShinGroup (ひざ下)
-  
+  // 多関節キャラクターパーツのアニメーション
   const chestGroup = k.children[1];
   const neckGroup = chestGroup.children[2];
   const armL = chestGroup.children[3];
@@ -827,7 +837,6 @@ function updatePlayer() {
     armL.children[3].rotation.x = 0;
     armR.children[3].rotation.x = 0;
     
-    // 待機中もふんわりと呼吸するように首や体が上下に揺れる
     const breath = Math.sin(performance.now() * 0.003) * 0.04;
     chestGroup.rotation.x = breath;
     neckGroup.rotation.x = -breath;
@@ -859,7 +868,6 @@ function checkCollisions() {
     const bp = ball.mesh.position;
     const dist = kp.distanceTo(bp);
     
-    // ボールとプレイヤーが激突したとき
     if (dist < p.radius + ball.radius * 0.95) {
       playSound('catch', 1.0);
       
@@ -891,14 +899,14 @@ function checkCollisions() {
       ball.vy = 0.28;
       
       ball.isThrown = true;
-      ball.throwCooldown = 22; // クールダウンを少し長めにして衝突離脱を保護
+      ball.throwCooldown = 22;
       
       playSound('throw', 0.9 + Math.random() * 0.2);
-      showFloatMessage("オートスロー！ ⚡☄️", '#ff4d6d');
+      showFloatMessage("オートスロー！ ⚡☄️", '#d9381e');
       
-      // 射出火花 (いちごピンク)
+      // 射出火花 (朱赤)
       for (let i = 0; i < 8; i++) {
-        const sp = new GameParticle(ball.x, ball.y, ball.z, 0xff4d6d, 0.3);
+        const sp = new GameParticle(ball.x, ball.y, ball.z, 0xd9381e, 0.3);
         state.scene.add(sp);
         state.particles.push(sp);
       }
@@ -919,10 +927,10 @@ function checkCollisions() {
         
         const addScore = ball.isThrown ? 120 : 40;
         state.score += addScore;
-        showFloatMessage(`モンスター撃破！ +${addScore} pts`, '#ff758f');
+        showFloatMessage(`モンスター撃破！ +${addScore} pts`, '#d9381e');
         
-        // 撃破時の紙吹雪 (さくらピンク/ラムネブルー)
-        const pColors = [0xff758f, 0xffcad4, 0x00bbf9];
+        // 撃破時の紙吹雪 (紅白金のおめでたい配色)
+        const pColors = [0xd9381e, 0xffffff, 0xffb703];
         for (let i = 0; i < 20; i++) {
           const c = pColors[Math.floor(Math.random() * pColors.length)];
           const sp = new GameParticle(mp.x, mp.y + monster.size/2, mp.z, c, 0.28);
@@ -932,13 +940,13 @@ function checkCollisions() {
         
         // ★ モンスターを撃破した際、50%の確率で新しい巨大ボールがアリーナにポップする！ (ボール上限 15個)
         if (Math.random() < 0.5 && state.balls.length < 15) {
-          const newColors = [0xff4d6d, 0xffe53b, 0x00bbf9, 0xff758f, 0xffcad4];
+          const newColors = [0xd9381e, 0xffb703, 0x1d3557, 0xffffff];
           const c = newColors[Math.floor(Math.random() * newColors.length)];
           const r = 3.2 + Math.random() * 1.3;
           const newBall = new BouncyBall(mp.x, 15, mp.z, r, c);
           state.balls.push(newBall);
           playSound('spawn');
-          showFloatMessage("巨大ボール追加！ 🥎✨", '#ffe53b');
+          showFloatMessage("巨大ボール追加！ 🥎✨", '#ffb703');
         }
         
         // ボールの反射
@@ -1028,7 +1036,7 @@ function startGame() {
   document.getElementById('game-screen').classList.add('active');
   
   updateHUD();
-  showFloatMessage("投げまくりバトル開始！ ☄️", '#ff4d6d');
+  showFloatMessage("投げまくりバトル開始！ ☄️", '#d9381e');
   
   // モンスター出現ループ
   if (state.spawnInterval) clearInterval(state.spawnInterval);
@@ -1051,7 +1059,7 @@ function finishGame() {
   document.getElementById('result-score').textContent = state.score;
   const msg = document.getElementById('result-message');
   if (state.score >= 1500) {
-    msg.innerHTML = `<span style="color: #ff4d6d; font-weight: 900;">👑 伝説のパステルアタッカー！ 👑</span><br>驚異のボールコントロールと反射！神業です！`;
+    msg.innerHTML = `<span style="color: #d9381e; font-weight: 900;">👑 伝説のお祭りマスター！ 👑</span><br>驚異のボールコントロールと反射！神業です！`;
   } else if (state.score >= 700) {
     msg.textContent = 'ナイスアタック！巨大ボールを大量に跳ね返してモンスターをなぎ倒しました！';
   } else {
