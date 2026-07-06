@@ -1,4 +1,4 @@
-// --- game5: Bouncy Ball Catch & Auto-Throw 3D (Shinto Shrine Theme) ---
+// --- game5: Bouncy Ball Catch & Auto-Throw 3D (Sakura Pastel Theme) ---
 
 const state = {
   gameState: 'lobby', // 'lobby' | 'playing' | 'gameover'
@@ -17,7 +17,7 @@ const state = {
   monsters: [],
   particles: [],
   
-  // Arena Settings (Shinto Vermilion & Ivory Theme)
+  // Arena Settings (Sakura & Mint Theme)
   arenaWidth: 60,
   arenaDepth: 60,
   arenaHeight: 30,
@@ -188,7 +188,7 @@ class GameParticle extends THREE.Mesh {
 
 // --- Bouncy Ball (大きくてふんわり弾む大量のボール) ---
 class BouncyBall {
-  constructor(x, y, z, radius = 4.0, colorHex = 0xd9381e) {
+  constructor(x, y, z, radius = 4.0, colorHex = 0xff4d6d) {
     this.radius = radius;
     this.color = colorHex;
     this.isThrown = false;
@@ -210,7 +210,7 @@ class BouncyBall {
     this.sphere.receiveShadow = true;
     this.mesh.add(this.sphere);
     
-    // 和風の「手まり」のような太めのバンド模様
+    // 白いリングバンド模様
     const ringGeo = new THREE.TorusGeometry(radius * 1.01, radius * 0.07, 8, 32);
     const ringMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 });
     const ring = new THREE.Mesh(ringGeo, ringMat);
@@ -255,7 +255,7 @@ class BouncyBall {
   }
   
   update() {
-    // ★ ボールは重力を弱め (0.4倍) にして、ふんわり落下させる
+    // ボールは重力を弱め (0.4倍) にして、ふんわり落下させる
     this.vy += state.gravity * 0.4;
     
     // 空気抵抗を適用してふんわり動く
@@ -314,7 +314,7 @@ class BouncyBall {
       this.isThrown = false;
     }
     
-    // ★ びよんびよん変形からの復元イージングを遅く (0.07) し、むにゅ〜っとゆっくり戻るように
+    // びよんびよん変形からの復元イージングを遅く (0.07) し、むにゅ〜っとゆっくり戻るように
     this.scaleX += (1.0 - this.scaleX) * 0.07;
     this.scaleY += (1.0 - this.scaleY) * 0.07;
     this.scaleZ += (1.0 - this.scaleZ) * 0.07;
@@ -333,16 +333,16 @@ class BouncyBall {
   }
 }
 
-// --- Jelly Monster (提灯型モンスター) ---
+// --- Jelly Monster (ラムネソーダモンスター) ---
 class JellyMonster {
   constructor(x, z, size = 1.8) {
     this.size = size;
     this.mesh = new THREE.Group();
     
-    // 提灯ボディ (山吹ゴールド)
+    // ラムネソーダボディ (半透明ブルー)
     const geo = new THREE.CylinderGeometry(size * 0.8, size, size, 16);
     const mat = new THREE.MeshStandardMaterial({
-      color: 0xffb703,
+      color: 0x00bbf9,
       roughness: 0.15,
       metalness: 0.1,
       transparent: true,
@@ -353,18 +353,6 @@ class JellyMonster {
     this.body.castShadow = true;
     this.body.receiveShadow = true;
     this.mesh.add(this.body);
-    
-    // 提灯の上下の黒いふち
-    const rimGeo = new THREE.CylinderGeometry(size * 0.85, size * 0.85, size * 0.12, 16);
-    const rimMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.5 });
-    
-    const rimTop = new THREE.Mesh(rimGeo, rimMat);
-    rimTop.position.y = size;
-    this.mesh.add(rimTop);
-    
-    const rimBottom = new THREE.Mesh(rimGeo, rimMat);
-    rimBottom.position.y = 0;
-    this.mesh.add(rimBottom);
     
     // 大きな目
     const eyeGeo = new THREE.SphereGeometry(0.35, 12, 12);
@@ -416,16 +404,16 @@ class JellyMonster {
   }
 }
 
-// --- Player (多関節お祭りロボット人間 - 11箇所可動関節) ---
+// --- Player (多関節三色団子ロボット人間 - 11箇所可動関節) ---
 function buildPlayer() {
   state.player = new THREE.Group();
   
-  // 基幹マテリアル
-  const bodyMat = new THREE.MeshStandardMaterial({ color: 0xd9381e, roughness: 0.35 }); // 法被の朱赤
-  const innerMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 }); // 白木・白
-  const limbMat = new THREE.MeshStandardMaterial({ color: 0x1d3557, roughness: 0.4 }); // 藍色
-  const jointMat = new THREE.MeshStandardMaterial({ color: 0xffb703, roughness: 0.3 }); // 金色関節
-  const eyeMat = new THREE.MeshBasicMaterial({ color: 0x1a1a1a }); // 墨黒
+  // 基幹マテリアル (さくらピンク・抹茶グリーン・白の三色団子)
+  const bodyMat = new THREE.MeshStandardMaterial({ color: 0xff85a2, roughness: 0.3 }); // さくらピンク胴体
+  const innerMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 }); // 白
+  const limbMat = new THREE.MeshStandardMaterial({ color: 0x70e000, roughness: 0.4 }); // 抹茶グリーン手足
+  const jointMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 }); // 白ジョイント
+  const eyeMat = new THREE.MeshBasicMaterial({ color: 0xffb703 }); // あんずオレンジ目
   
   // 1. 腰 (Pelvis) - キャラクターの起点
   const pelvisGeo = new THREE.BoxGeometry(1.6, 0.5, 1.1);
@@ -434,7 +422,7 @@ function buildPlayer() {
   pelvis.castShadow = true;
   state.player.add(pelvis);
   
-  // 2. 胸部 (Chest / Upper Body) - 腰の上の背骨関節を介して接続
+  // 2. 胸部 (Chest / Upper Body)
   const chestGroup = new THREE.Group();
   chestGroup.position.set(0, 1.15, 0); // 背骨関節の位置
   
@@ -444,13 +432,13 @@ function buildPlayer() {
   
   const chestGeo = new THREE.BoxGeometry(1.6, 1.2, 1.2);
   const chest = new THREE.Mesh(chestGeo, bodyMat);
-  chest.position.y = 0.6; // 関節の少し上にメッシュの中心
+  chest.position.y = 0.6;
   chest.castShadow = true;
   chestGroup.add(chest);
   
-  // 3. 首関節 ＆ 頭
+  // 3. 首関節 ＆ 頭 (ヘアバンドやハチマキなしのシンプルな団子頭)
   const neckGroup = new THREE.Group();
-  neckGroup.position.set(0, 1.2, 0); // 胸の上端
+  neckGroup.position.set(0, 1.2, 0);
   
   // 首関節球体
   const neckJoint = new THREE.Mesh(new THREE.SphereGeometry(0.18, 8, 8), jointMat);
@@ -462,14 +450,6 @@ function buildPlayer() {
   head.castShadow = true;
   neckGroup.add(head);
   
-  // ハチマキ (藍染)
-  const bandGeo = new THREE.TorusGeometry(0.67, 0.08, 6, 24);
-  const bandMat = new THREE.MeshBasicMaterial({ color: 0x1d3557 });
-  const band = new THREE.Mesh(bandGeo, bandMat);
-  band.position.set(0, 0.6, 0);
-  band.rotation.x = Math.PI / 8;
-  neckGroup.add(band);
-  
   // 目 (ゴーグル)
   const goggles = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.26, 0.2), eyeMat);
   goggles.position.set(0, 0.5, 0.55);
@@ -479,7 +459,7 @@ function buildPlayer() {
   
   // 4. 左腕 (肩関節を胸の左に接続)
   const leftArm = new THREE.Group();
-  leftArm.position.set(-0.95, 1.0, 0); // 胸の上側左
+  leftArm.position.set(-0.95, 1.0, 0);
   const lShoulder = new THREE.Mesh(new THREE.SphereGeometry(0.18, 8, 8), jointMat);
   leftArm.add(lShoulder);
   
@@ -537,7 +517,7 @@ function buildPlayer() {
   
   // 6. 左脚 (股関節を腰の下に接続)
   const leftLeg = new THREE.Group();
-  leftLeg.position.set(-0.45, 0.9, 0); // 腰の下
+  leftLeg.position.set(-0.45, 0.9, 0);
   const lHip = new THREE.Mesh(legJointGeo, jointMat);
   leftLeg.add(lHip);
   
@@ -609,16 +589,16 @@ function buildPlayer() {
 function buildArena() {
   const arenaGroup = new THREE.Group();
   
-  // 床 (白木・檜のアイボリーベージュ)
+  // 床 (パステルミントエメラルド)
   const floorGeo = new THREE.BoxGeometry(state.arenaWidth, 1.0, state.arenaDepth);
-  const floorMat = new THREE.MeshStandardMaterial({ color: 0xfdf6e2, roughness: 0.7 });
+  const floorMat = new THREE.MeshStandardMaterial({ color: 0xd8f3dc, roughness: 0.6 });
   const floor = new THREE.Mesh(floorGeo, floorMat);
   floor.position.y = -0.5;
   floor.receiveShadow = true;
   arenaGroup.add(floor);
   
-  // 壁 (鳥居の朱赤)
-  const wallMat = new THREE.MeshStandardMaterial({ color: 0xd9381e, roughness: 0.55 });
+  // 壁 (さくらピンク)
+  const wallMat = new THREE.MeshStandardMaterial({ color: 0xffccd5, roughness: 0.5 });
   const w = state.arenaWidth;
   const d = state.arenaDepth;
   const h = state.arenaHeight;
@@ -640,8 +620,8 @@ function buildArena() {
   wallR.position.set(w / 2 + 1.0, h / 2, 0);
   arenaGroup.add(wallR);
   
-  // グリッド線 (漆黒・墨色の格子)
-  const gridHelper = new THREE.GridHelper(w, 20, 0x2c2c2c, 0x2c2c2c);
+  // グリッド線 (サクラ色の格子模様)
+  const gridHelper = new THREE.GridHelper(w, 20, 0xffb5a7, 0xffb5a7);
   gridHelper.position.y = 0.05;
   arenaGroup.add(gridHelper);
   
@@ -653,10 +633,10 @@ function init3D() {
   const container = document.getElementById('canvas-container');
   container.innerHTML = '';
   
-  // Scene (日本晴れの瑠璃色の空)
+  // Scene (サクラホワイトの春霞)
   state.scene = new THREE.Scene();
-  state.scene.background = new THREE.Color(0x8ecae6);
-  state.scene.fog = new THREE.FogExp2(0x8ecae6, 0.006);
+  state.scene.background = new THREE.Color(0xfff0f5);
+  state.scene.fog = new THREE.FogExp2(0xfff0f5, 0.008);
   
   // Camera (固定俯瞰の三人称視点)
   state.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.5, 500);
@@ -668,11 +648,11 @@ function init3D() {
   state.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   container.appendChild(state.renderer.domElement);
   
-  // Lights (からっと晴れた強い陽光)
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
+  // Lights (日本的な明るさ: 全体を強く柔らかく照らす)
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
   state.scene.add(ambientLight);
   
-  const sunLight = new THREE.DirectionalLight(0xfffcf2, 1.1); // 強い日差し
+  const sunLight = new THREE.DirectionalLight(0xfffcf2, 1.05); // 温かみのある日差し
   sunLight.position.set(30, 50, 20);
   sunLight.castShadow = true;
   sunLight.shadow.mapSize.width = 1024;
@@ -683,15 +663,15 @@ function init3D() {
   buildArena();
   buildPlayer();
   
-  // ★ ボールは大きくて大量！初期ボール7個！ (漆朱赤、山吹金、若竹緑)
+  // ★ ボールは大きくて大量！初期ボール7個！ (いちごピンク、レモンイエロー、ラムネブルー)
   state.balls = [
-    new BouncyBall(-16, 15, -16, 4.4, 0xd9381e),
-    new BouncyBall(16, 18, -16, 3.8, 0xffb703),
-    new BouncyBall(0, 20, 16, 4.6, 0x1b4332),
-    new BouncyBall(-18, 12, 18, 3.5, 0xd9381e),
-    new BouncyBall(18, 16, 18, 4.2, 0xffb703),
-    new BouncyBall(-5, 22, -10, 3.9, 0x1b4332),
-    new BouncyBall(10, 14, 0, 4.5, 0xd9381e)
+    new BouncyBall(-16, 15, -16, 4.4, 0xff4d6d),
+    new BouncyBall(16, 18, -16, 3.8, 0xffe53b),
+    new BouncyBall(0, 20, 16, 4.6, 0x00bbf9),
+    new BouncyBall(-18, 12, 18, 3.5, 0xff4d6d),
+    new BouncyBall(18, 16, 18, 4.2, 0xffe53b),
+    new BouncyBall(-5, 22, -10, 3.9, 0x00bbf9),
+    new BouncyBall(10, 14, 0, 4.5, 0xff4d6d)
   ];
   
   state.monsters = [];
@@ -731,9 +711,9 @@ function spawnMonster() {
   const monster = new JellyMonster(rx, rz, 1.8 + Math.random() * 0.5);
   state.monsters.push(monster);
   
-  // 出現時エフェクト
+  // 出現時エフェクト (ラムネブルー)
   for (let i = 0; i < 5; i++) {
-    const sp = new GameParticle(rx, 0.5, rz, 0xffb703, 0.25);
+    const sp = new GameParticle(rx, 0.5, rz, 0x00bbf9, 0.25);
     state.scene.add(sp);
     state.particles.push(sp);
   }
@@ -825,7 +805,7 @@ function updatePlayer() {
     armL.rotation.x = -Math.sin(cycle) * 0.6;
     armR.rotation.x = Math.sin(cycle) * 0.6;
     
-    // 4. ひざ・ひじの関節屈曲 (インデックス 3 に shinGroup / foreArmGroup)
+    // 4. ひざ・ひじの関節屈曲
     legL.children[3].rotation.x = Math.max(0, -Math.sin(cycle) * 0.85); // 後ろ脚のひざが曲がる
     legR.children[3].rotation.x = Math.max(0, Math.sin(cycle) * 0.85);
     
@@ -879,7 +859,7 @@ function checkCollisions() {
     const bp = ball.mesh.position;
     const dist = kp.distanceTo(bp);
     
-    // ボールとプレイヤーが激突したとき (ボールが大きくなったので接触判定の半径を調整)
+    // ボールとプレイヤーが激突したとき
     if (dist < p.radius + ball.radius * 0.95) {
       playSound('catch', 1.0);
       
@@ -900,7 +880,7 @@ function checkCollisions() {
         throwAngle = Math.atan2(targetMonster.x - p.x, targetMonster.z - p.z);
       }
       
-      // ボールをその方向に投げつける！ (射出位置を少し離す)
+      // ボールをその方向に投げつける！
       ball.x = p.x + Math.sin(throwAngle) * (p.radius + ball.radius + 0.5);
       ball.z = p.z + Math.cos(throwAngle) * (p.radius + ball.radius + 0.5);
       ball.y = 2.0;
@@ -914,11 +894,11 @@ function checkCollisions() {
       ball.throwCooldown = 22; // クールダウンを少し長めにして衝突離脱を保護
       
       playSound('throw', 0.9 + Math.random() * 0.2);
-      showFloatMessage("オートスロー！ ⚡☄️", '#d9381e');
+      showFloatMessage("オートスロー！ ⚡☄️", '#ff4d6d');
       
-      // 射出火花
+      // 射出火花 (いちごピンク)
       for (let i = 0; i < 8; i++) {
-        const sp = new GameParticle(ball.x, ball.y, ball.z, 0xd9381e, 0.3);
+        const sp = new GameParticle(ball.x, ball.y, ball.z, 0xff4d6d, 0.3);
         state.scene.add(sp);
         state.particles.push(sp);
       }
@@ -939,10 +919,10 @@ function checkCollisions() {
         
         const addScore = ball.isThrown ? 120 : 40;
         state.score += addScore;
-        showFloatMessage(`モンスター撃破！ +${addScore} pts`, '#d9381e');
+        showFloatMessage(`モンスター撃破！ +${addScore} pts`, '#ff758f');
         
-        // 撃破時の紙吹雪 (朱赤/白/金)
-        const pColors = [0xd9381e, 0xffffff, 0xffb703];
+        // 撃破時の紙吹雪 (さくらピンク/ラムネブルー)
+        const pColors = [0xff758f, 0xffcad4, 0x00bbf9];
         for (let i = 0; i < 20; i++) {
           const c = pColors[Math.floor(Math.random() * pColors.length)];
           const sp = new GameParticle(mp.x, mp.y + monster.size/2, mp.z, c, 0.28);
@@ -952,14 +932,13 @@ function checkCollisions() {
         
         // ★ モンスターを撃破した際、50%の確率で新しい巨大ボールがアリーナにポップする！ (ボール上限 15個)
         if (Math.random() < 0.5 && state.balls.length < 15) {
-          const newColors = [0xd9381e, 0xffb703, 0x1b4332, 0xffffff];
+          const newColors = [0xff4d6d, 0xffe53b, 0x00bbf9, 0xff758f, 0xffcad4];
           const c = newColors[Math.floor(Math.random() * newColors.length)];
-          // サイズもランダムに巨大化
           const r = 3.2 + Math.random() * 1.3;
           const newBall = new BouncyBall(mp.x, 15, mp.z, r, c);
           state.balls.push(newBall);
           playSound('spawn');
-          showFloatMessage("巨大ボール追加！ 🥎✨", '#ffb703');
+          showFloatMessage("巨大ボール追加！ 🥎✨", '#ffe53b');
         }
         
         // ボールの反射
@@ -1049,7 +1028,7 @@ function startGame() {
   document.getElementById('game-screen').classList.add('active');
   
   updateHUD();
-  showFloatMessage("投げまくりバトル開始！ ☄️", '#d9381e');
+  showFloatMessage("投げまくりバトル開始！ ☄️", '#ff4d6d');
   
   // モンスター出現ループ
   if (state.spawnInterval) clearInterval(state.spawnInterval);
@@ -1072,7 +1051,7 @@ function finishGame() {
   document.getElementById('result-score').textContent = state.score;
   const msg = document.getElementById('result-message');
   if (state.score >= 1500) {
-    msg.innerHTML = `<span style="color: #d9381e; font-weight: 900;">👑 伝説のお祭りマスター！ 👑</span><br>驚異のボールコントロールと反射！神業です！`;
+    msg.innerHTML = `<span style="color: #ff4d6d; font-weight: 900;">👑 伝説のパステルアタッカー！ 👑</span><br>驚異のボールコントロールと反射！神業です！`;
   } else if (state.score >= 700) {
     msg.textContent = 'ナイスアタック！巨大ボールを大量に跳ね返してモンスターをなぎ倒しました！';
   } else {
