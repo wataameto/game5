@@ -7,5 +7,8 @@
     "start": "npx -y http-server -p 8085"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "playwright": "^1.61.1"
+  }
 }

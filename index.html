@@ -3,47 +3,80 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>game5 - New Project</title>
+  <title>びよんびよんボールキャッチャー3D - game5</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Google Fonts: Outfit -->
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;900&family=Zen+Maru+Gothic:wght@500;900&display=swap" rel="stylesheet">
+  <!-- Three.js (r128) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
-  <div class="welcome-container">
+  <!-- ロビー（スタート画面） -->
+  <div id="lobby-screen" class="screen active">
     <div class="welcome-card">
       <div class="glow-effect"></div>
-      <div class="project-badge">PROJECT v5.0</div>
-      <h1>game5</h1>
-      <p class="subtitle">Next Creative Generation</p>
+      <div class="project-badge">GAME5 - AUTOTHROW</div>
+      <h1>びよんびよん<br>ボールキャッチャー</h1>
+      <p class="subtitle">Bouncy Ball Catch & Auto-Throw</p>
       
-      <div class="status-box">
-        <span class="pulse-indicator"></span>
-        <span class="status-text">企画フェーズ: 開発準備完了</span>
+      <div class="lobby-instructions">
+        <h3>🎮 あそびかた</h3>
+        <ul>
+          <li><strong>移動</strong>: <code>↑↓←→</code> または <code>WASD</code> キー（画面に対してそのまま動きます。視点はぐるぐる回りません！）</li>
+          <li><strong>投げまくりアクション</strong>: アリーナをびよんびよん跳ねるボールに**体当たり**しよう！当たった瞬間に近くの敵に向けて自動でボールを投げまくります！</li>
+          <li><strong>ミッション</strong>: 迫るゼリーモンスターを全滅させよう！モンスターを倒すとたまに新しいボールがアリーナに追加され、さらに投げまくりが加速します！</li>
+        </ul>
       </div>
 
-      <p class="description">
-        game5 の初期セットアップに成功しました！<br>
-        この画面が表示されていれば、3D描画、物理演算、音声・グラフィックギミックなど、あらゆる最新Web技術を組み込む準備ができています。
-      </p>
-
-      <div class="prompt-box">
-        <div class="prompt-title">👇 次にすること</div>
-        <p>「どんなゲームを作りたいか」をAntigravityに伝えてください！</p>
-        <div class="idea-tags">
-          <span class="tag">#3Dアクション</span>
-          <span class="tag">#シミュレーション</span>
-          <span class="tag">#リズムゲーム</span>
-          <span class="tag">#ボードゲーム</span>
-        </div>
+      <button class="btn-start" onclick="startGame()">バトル開始！ 🚀</button>
+      
+      <div class="best-score-box">
+        👑 ハイスコア: <span id="best-score">0</span> pts
       </div>
-
-      <footer class="footer">
-        Repository: <a href="https://github.com/wataameto/game5" target="_blank">wataameto/game5</a>
-      </footer>
     </div>
   </div>
+
+  <!-- ゲーム画面HUD -->
+  <div id="game-screen" class="screen">
+    <div id="canvas-container"></div>
+    
+    <!-- HUD（情報表示） -->
+    <div class="hud-container">
+      <div class="hud-card">
+        <span class="hud-label">SCORE</span>
+        <span id="score-val" class="hud-value">0</span>
+      </div>
+      <div class="hud-card">
+        <span class="hud-label">TIME</span>
+        <span id="time-val" class="hud-value">60.00</span>
+      </div>
+      <div class="hud-card">
+        <span class="hud-label">BALLS</span>
+        <span id="balls-val" class="hud-value">3</span>
+      </div>
+      <button id="mute-btn" class="glass-btn" onclick="toggleMute()">🔊</button>
+    </div>
+
+    <!-- コンボ/アタックメッセージ -->
+    <div id="float-message" class="float-msg"></div>
+  </div>
+
+  <!-- リザルト画面 -->
+  <dialog id="result-dialog" class="custom-dialog">
+    <div class="dialog-content">
+      <h2>🎉 タイムアップ！</h2>
+      <p class="dialog-score-label">獲得スコア</p>
+      <div class="dialog-score"><span id="result-score">0</span> pts</div>
+      <p id="result-message"></p>
+      <div class="dialog-buttons">
+        <button id="restart-btn" class="btn-start">もういちど 🔄</button>
+        <button id="quit-btn" class="btn-quit">ロビーへ戻る 🏠</button>
+      </div>
+    </div>
+  </dialog>
+
   <script src="app.js"></script>
 </body>
 </html>
