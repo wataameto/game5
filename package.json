@@ -1,0 +1,11 @@
+{
+  "name": "game5",
+  "version": "1.0.0",
+  "description": "game5 project template",
+  "main": "app.js",
+  "scripts": {
+    "start": "npx -y http-server -p 8085"
+  },
+  "author": "",
+  "license": "ISC"
+}
